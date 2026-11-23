@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14213D">
+<title>Keuangan Harian</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF2F6;--sf:#fff;--ink:#14213D;--mu:#5C6B80;--ln:#D8E0EA;--in:#17795A;--out:#C0392B;--ac:#14213D;--ac-t:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1626;--sf:#17233A;--ink:#E8EEF7;--mu:#93A3BA;--ln:#26364F;--in:#4CC79B;--out:#FF8A7A;--ac:#E8EEF7;--ac-t:#0E1626}}
+:root[data-theme="dark"]{--bg:#0E1626;--sf:#17233A;--ink:#E8EEF7;--mu:#93A3BA;--ln:#26364F;--in:#4CC79B;--out:#FF8A7A;--ac:#E8EEF7;--ac-t:#0E1626}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.45 "Plus Jakarta Sans",system-ui,sans-serif;max-width:480px;margin-inline:auto;padding:16px 16px 96px}
+h1,h2{margin:0}button,input,select{font:inherit;color:inherit}
+.clock{padding:8px 4px 16px}
+.day{font-weight:800;font-size:30px;letter-spacing:-.02em}
+.full{color:var(--mu);font-weight:600}
+.time{font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;margin-top:2px}
+.nav{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.nav button,.nav input{height:44px;border:1px solid var(--ln);background:var(--sf);border-radius:12px;padding:0 14px}
+.nav input{flex:1;min-width:0}
+.nav .today{font-weight:600}
+.sum{background:var(--ac);color:var(--ac-t);border-radius:18px;padding:18px}
+.sum small{opacity:.75;font-weight:600}
+.big{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.row2 div{border-top:1px solid color-mix(in srgb,var(--ac-t) 25%,transparent);padding-top:10px}
+.row2 b{display:block;font-variant-numeric:tabular-nums}
+.mon{margin:14px 4px;color:var(--mu);font-weight:600;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.mon b{color:var(--ink)}
+h2{font-size:16px;margin:20px 4px 8px}
+.item{display:flex;justify-content:space-between;gap:12px;align-items:center;background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.item .n{font-weight:600}.item .c{color:var(--mu);font-size:13px}
+.amt{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.in{color:var(--in)}.out{color:var(--out)}
+.del{border:0;background:none;color:var(--mu);font-size:20px;padding:4px 8px;cursor:pointer}
+.empty{color:var(--mu);padding:20px 4px;text-align:center}
+.fab{position:fixed;right:max(16px,calc(50% - 224px));bottom:calc(20px + env(safe-area-inset-bottom,0px));height:54px;padding:0 22px;border-radius:27px;border:0;background:var(--ac);color:var(--ac-t);font-weight:800;box-shadow:0 6px 20px rgba(0,0,0,.25);cursor:pointer}
+.sheet{position:fixed;inset:0;background:rgba(10,18,32,.55);display:none;align-items:flex-end;justify-content:center;z-index:5}
+.sheet.on{display:flex}
+.card{background:var(--sf);width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px))}
+.card label{display:block;font-weight:600;color:var(--mu);font-size:13px;margin:12px 0 4px}
+.card input,.card select{width:100%;height:46px;border:1px solid var(--ln);background:var(--bg);border-radius:12px;padding:0 12px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.seg button{height:46px;border-radius:12px;border:1px solid var(--ln);background:var(--bg);font-weight:600;cursor:pointer}
+.seg button.on.o{background:var(--out);color:#fff;border-color:var(--out)}
+.seg button.on.i{background:var(--in);color:#fff;border-color:var(--in)}
+.save{width:100%;height:50px;margin-top:18px;border:0;border-radius:14px;background:var(--ac);color:var(--ac-t);font-weight:800;cursor:pointer}
+.lock{position:fixed;inset:0;background:var(--bg);z-index:9;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center}
+.lock.on{display:flex}
+.lock input{width:180px;height:56px;text-align:center;font-size:26px;letter-spacing:.4em;border:1px solid var(--ln);background:var(--sf);border-radius:14px}
+.lock .msg{color:var(--mu);min-height:22px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #3B82F6;outline-offset:2px}
+</style>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Keuangan">
+</head>
+<body>
+<div class="lock" id="lock">
+  <h1>Keuangan Harian</h1>
+  <div class="msg" id="lockMsg"></div>
+  <input id="pin" type="password" inputmode="numeric" maxlength="6" autocomplete="off" aria-label="PIN">
+  <button class="save" id="pinBtn" style="width:180px">Masuk</button>
+</div>
+
+<main id="app" hidden>
+  <div class="clock">
+    <div class="day" id="dName"></div>
+    <div class="full" id="dFull"></div>
+    <div class="time" id="dTime"></div>
+  </div>
+
+  <div class="nav">
+    <button id="prev" aria-label="Hari sebelumnya">‹</button>
+    <input type="date" id="picker" aria-label="Pilih tanggal">
+    <button id="next" aria-label="Hari berikutnya">›</button>
+    <button class="today" id="today">Hari ini</button>
+  </div>
+
+  <section class="sum">
+    <small id="selLabel"></small>
+    <div class="big" id="bal"></div>
+    <div class="row2">
+      <div><small>Pemasukan</small><b id="sIn"></b></div>
+      <div><small>Pengeluaran</small><b id="sOut"></b></div>
+    </div>
+  </section>
+
+  <div class="mon"><span id="monLabel"></span><span>Masuk <b id="mIn"></b></span><span>Keluar <b id="mOut"></b></span><span>Sisa <b id="mBal"></b></span></div>
+
+  <h2>Catatan hari ini</h2>
+  <div id="list"></div>
+  <div style="text-align:center;margin-top:24px"><button class="del" id="expJ" style="font-size:13px">Ekspor cadangan</button><label class="del" style="font-size:13px;cursor:pointer">Impor<input type="file" id="impJ" accept=".json" hidden></label><button class="del" id="expC" style="font-size:13px">Ekspor CSV</button><button class="del" id="lockNow" style="font-size:13px">Kunci</button></div>
+</main>
+
+<button class="fab" id="add" hidden>+ Catat</button>
+
+<div class="sheet" id="sheet">
+  <div class="card" role="dialog" aria-label="Catat transaksi">
+    <h2 style="margin:0 0 8px">Catat transaksi</h2>
+    <div class="seg"><button class="o on" id="tOut" data-t="out">Pengeluaran</button><button class="i" id="tIn" data-t="in">Pemasukan</button></div>
+    <label for="fAmt">Jumlah (Rp)</label>
+    <input id="fAmt" type="number" inputmode="numeric" min="0" placeholder="0">
+    <label for="fCat">Kategori</label>
+    <select id="fCat"></select>
+    <label for="fNote">Keterangan</label>
+    <input id="fNote" type="text" placeholder="Contoh: makan siang">
+    <label for="fDate">Tanggal</label>
+    <input id="fDate" type="date">
+    <button class="save" id="save">Simpan</button>
+    <button class="save" id="cancel" style="background:none;color:var(--mu);height:40px;margin-top:4px">Batal</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var KEY_TX="kh_tx_v1",KEY_PIN="kh_pin_v1";
+  var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+  var tx=[];try{tx=JSON.parse(store.get(KEY_TX)||"[]")}catch(e){tx=[]}
+  var type="out",sel=key(new Date());
+  var CAT={out:["Makan & minum","Transport","Belanja","Tagihan","Hiburan","Kesehatan","Lainnya"],in:["Gaji","Usaha","Hadiah","Lainnya"]};
+  var rp=function(n){return "Rp "+Math.round(n).toLocaleString("id-ID")};
+  function key(d){var m=d.getMonth()+1,x=d.getDate();return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(x<10?"0":"")+x}
+  function parse(k){var p=k.split("-");return new Date(+p[0],+p[1]-1,+p[2])}
+  function hash(s){var h=5381;for(var i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return String(h)}
+  function save(){store.set(KEY_TX,JSON.stringify(tx))}
+
+  /* Jam & tanggal real-time */
+  function tick(){
+    var n=new Date();
+    $("dName").textContent=n.toLocaleDateString("id-ID",{weekday:"long"});
+    $("dFull").textContent=n.toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
+    $("dTime").textContent=n.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).replace(/\./g,":")+" WIB";
+  }
+  setInterval(tick,1000);tick();
+
+  /* Render */
+  function render(){
+    var d=parse(sel);
+    $("picker").value=sel;
+    $("selLabel").textContent=d.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    var day=tx.filter(function(t){return t.date===sel});
+    var i=0,o=0;day.forEach(function(t){t.type==="in"?i+=t.amt:o+=t.amt});
+    $("bal").textContent=rp(i-o);$("sIn").textContent=rp(i);$("sOut").textContent=rp(o);
+    var pre=sel.slice(0,7),mi=0,mo=0;
+    tx.forEach(function(t){if(t.date.slice(0,7)===pre){t.type==="in"?mi+=t.amt:mo+=t.amt}});
+    $("monLabel").textContent=d.toLocaleDateString("id-ID",{month:"long",year:"numeric"});
+    $("mIn").textContent=rp(mi);$("mOut").textContent=rp(mo);$("mBal").textContent=rp(mi-mo);
+    var L=$("list");L.innerHTML="";
+    if(!day.length){L.innerHTML='<div class="empty">Belum ada catatan. Tekan “+ Catat” untuk menambah.</div>';return}
+    day.slice().reverse().forEach(function(t){
+      var el=document.createElement("div");el.className="item";
+      var l=document.createElement("div"),a=document.createElement("div"),x=document.createElement("button");
+      l.innerHTML='<div class="n"></div><div class="c"></div>';
+      l.firstChild.textContent=t.note||t.cat;l.lastChild.textContent=t.cat;
+      a.className="amt "+t.type;a.textContent=(t.type==="in"?"+ ":"− ")+rp(t.amt);
+      x.className="del";x.textContent="×";x.setAttribute("aria-label","Hapus catatan");
+      x.onclick=function(){if(confirm("Hapus catatan ini?")){tx=tx.filter(function(z){return z.id!==t.id});save();render()}};
+      var r=document.createElement("div");r.style.cssText="display:flex;align-items:center;gap:4px";r.appendChild(a);r.appendChild(x);
+      el.appendChild(l);el.appendChild(r);L.appendChild(el);
+    });
+  }
+  function shift(n){var d=parse(sel);d.setDate(d.getDate()+n);sel=key(d);render()}
+  $("prev").onclick=function(){shift(-1)};$("next").onclick=function(){shift(1)};
+  $("today").onclick=function(){sel=key(new Date());render()};
+  $("picker").onchange=function(e){if(e.target.value){sel=e.target.value;render()}};
+
+  /* Form */
+  function setType(t){type=t;$("tOut").classList.toggle("on",t==="out");$("tIn").classList.toggle("on",t==="in");
+    $("fCat").innerHTML=CAT[t].map(function(c){return "<option>"+c+"</option>"}).join("")}
+  $("tOut").onclick=function(){setType("out")};$("tIn").onclick=function(){setType("in")};
+  $("add").onclick=function(){setType("out");$("fAmt").value="";$("fNote").value="";$("fDate").value=sel;$("sheet").classList.add("on");setTimeout(function(){$("fAmt").focus()},50)};
+  $("cancel").onclick=function(){$("sheet").classList.remove("on")};
+  $("save").onclick=function(){
+    var a=parseFloat($("fAmt").value);
+    if(!(a>0)){$("fAmt").focus();return}
+    var d=$("fDate").value||sel;
+    tx.push({id:Date.now()+Math.random(),date:d,type:type,cat:$("fCat").value,note:$("fNote").value.trim(),amt:a});
+    save();sel=d;$("sheet").classList.remove("on");render();
+  };
+
+  /* PIN (hanya pemilik yang bisa buka) */
+  function showApp(on){$("app").hidden=!on;$("add").hidden=!on;$("lock").classList.toggle("on",!on)}
+  function askPin(){
+    var has=store.get(KEY_PIN);
+    $("lockMsg").textContent=has?"Masukkan PIN untuk membuka":"Buat PIN 4–6 angka untuk mengunci data";
+    $("pinBtn").textContent=has?"Masuk":"Simpan PIN";$("pin").value="";showApp(false);
+  }
+  function submitPin(){
+    var v=$("pin").value,has=store.get(KEY_PIN);
+    if(!/^\d{4,6}$/.test(v)){$("lockMsg").textContent="PIN harus 4–6 angka";return}
+    if(!has){store.set(KEY_PIN,hash(v));showApp(true);render()}
+    else if(hash(v)===has){showApp(true);sel=key(new Date());render()}
+    else{$("lockMsg").textContent="PIN salah, coba lagi";$("pin").value=""}
+  }
+  $("pinBtn").onclick=submitPin;
+  $("pin").onkeydown=function(e){if(e.key==="Enter")submitPin()};
+  $("lockNow").onclick=askPin;
+
+  /* Pindah hari otomatis saat tengah malam jika sedang melihat "hari ini" */
+  var lastToday=key(new Date());
+  setInterval(function(){var t=key(new Date());if(t!==lastToday){if(sel===lastToday)sel=t;lastToday=t;if(!$("app").hidden)render()}},1000);
+
+
+  function dl(name,txt,mime){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:mime}));a.download=name;document.body.appendChild(a);a.click();a.remove()}
+  $("expJ").onclick=function(){dl("cadangan-keuangan-"+key(new Date())+".json",JSON.stringify(tx),"application/json")};
+  $("expC").onclick=function(){var r=["tanggal,jenis,kategori,keterangan,jumlah"];tx.slice().sort(function(a,b){return a.date<b.date?-1:1}).forEach(function(t){r.push([t.date,t.type==="in"?"masuk":"keluar",t.cat,'"'+(t.note||"").replace(/"/g,'""')+'"',t.amt].join(","))});dl("keuangan-"+key(new Date())+".csv",r.join("\n"),"text/csv")};
+  $("impJ").onchange=function(e){var f=e.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var d=JSON.parse(rd.result);if(!Array.isArray(d))throw 0;var ids={};tx.forEach(function(t){ids[t.id]=1});d.forEach(function(t){if(t&&t.date&&t.amt>0&&!ids[t.id])tx.push(t)});save();render();alert("Impor selesai")}catch(x){alert("File tidak valid")}};rd.readAsText(f)};
+  if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
+  setType("out");askPin();
+})();
+</script>
+</body>
+</html>
