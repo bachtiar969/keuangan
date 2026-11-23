@@ -106,7 +106,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
     <label for="fAmt">Jumlah (Rp)</label>
     <input id="fAmt" type="number" inputmode="numeric" min="0" placeholder="0">
     <label for="fCat">Kategori</label>
-    <select id="fCat"></select>
+    <input id="fCat" type="text" list="catList" maxlength="40" autocomplete="off" placeholder="Pilih saran atau ketik sendiri"><datalist id="catList"></datalist>
     <label for="fNote">Keterangan</label>
     <input id="fNote" type="text" placeholder="Contoh: makan siang">
     <label for="fDate">Tanggal</label>
@@ -172,7 +172,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 
   /* Form */
   function setType(t){type=t;$("tOut").classList.toggle("on",t==="out");$("tIn").classList.toggle("on",t==="in");
-    $("fCat").innerHTML=CAT[t].map(function(c){return "<option>"+c+"</option>"}).join("")}
+    var seen={},opts=[];CAT[t].concat(tx.filter(function(z){return z.type===t}).map(function(z){return z.cat})).forEach(function(c){if(c&&!seen[c]){seen[c]=1;opts.push(c)}});
+    $("catList").innerHTML=opts.map(function(c){var o=document.createElement("option");o.value=c;return o.outerHTML}).join("");$("fCat").value=""}
   $("tOut").onclick=function(){setType("out")};$("tIn").onclick=function(){setType("in")};
   $("add").onclick=function(){setType("out");$("fAmt").value="";$("fNote").value="";$("fDate").value=sel;$("sheet").classList.add("on");setTimeout(function(){$("fAmt").focus()},50)};
   $("cancel").onclick=function(){$("sheet").classList.remove("on")};
@@ -180,7 +181,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
     var a=parseFloat($("fAmt").value);
     if(!(a>0)){$("fAmt").focus();return}
     var d=$("fDate").value||sel;
-    tx.push({id:Date.now()+Math.random(),date:d,type:type,cat:$("fCat").value,note:$("fNote").value.trim(),amt:a});
+    tx.push({id:Date.now()+Math.random(),date:d,type:type,cat:$("fCat").value.trim()||"Lainnya",note:$("fNote").value.trim(),amt:a});
     save();sel=d;$("sheet").classList.remove("on");render();
   };
 
